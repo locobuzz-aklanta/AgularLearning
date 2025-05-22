@@ -1,0 +1,90 @@
+.about-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.bio {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f5f9ff;
+  border-radius: 5px;
+  border-left: 4px solid #3498db;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bio-btn {
+  margin-top: 10px;
+}
+
+.skills-section, .projects-section {
+  margin-bottom: 30px;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.skills-list li {
+  background-color: #f0f0f0;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.skills-list li.highlighted {
+  background-color: #3498db;
+  color: white;
+}
+
+.projects-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.project-card {
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #f39c12;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.project-card.completed {
+  border-left-color: #2ecc71;
+}
+
+.project-card h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #2ecc71;
+  color: white;
+}
+
+.status-badge.in-progress {
+  background-color: #f39c12;
+}

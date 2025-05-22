@@ -1,0 +1,79 @@
+.add-task-container {
+  margin-top: 20px;
+}
+
+.toggle-form {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+  background-color: #27ae60;
+}
+
+.toggle-form:hover {
+  background-color: #219653;
+}
+
+.add-form {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.add-form h3 {
+  margin-bottom: 15px;
+  color: #3498db;
+}
+
+.form-control {
+  margin-bottom: 15px;
+}
+
+.form-control label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-control input, 
+.form-control textarea,
+.form-control select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-row .form-control {
+  flex: 1;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.submit-btn {
+  flex: 3;
+  background-color: #27ae60;
+}
+
+.submit-btn:hover {
+  background-color: #219653;
+}
+
+.cancel-btn {
+  flex: 1;
+  background-color: #e74c3c;
+}
+
+.cancel-btn:hover {
+  background-color: #c0392b;
+}

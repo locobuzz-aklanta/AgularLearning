@@ -1,0 +1,69 @@
+<div class="add-task-container">
+  <button class="btn toggle-form" (click)="toggleForm()" *ngIf="!isEditing">
+    {{ showForm ? 'Cancel' : 'Add New Task' }}
+  </button>
+
+  <form *ngIf="showForm" (ngSubmit)="onSubmit()" class="add-form">
+    <h3>{{ isEditing ? 'Edit Task' : 'Add New Task' }}</h3>
+    
+    <div class="form-control">
+      <label for="title">Task Title</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        [(ngModel)]="title"
+        placeholder="Enter task title"
+        required
+      />
+    </div>
+
+    <div class="form-control">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        name="description"
+        [(ngModel)]="description"
+        placeholder="Enter task description"
+        rows="3"
+      ></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-control">
+        <label for="dueDate">Due Date</label>
+        <input
+          type="date"
+          id="dueDate"
+          name="dueDate"
+          [(ngModel)]="dueDate"
+        />
+      </div>
+
+      <div class="form-control">
+        <label for="priority">Priority</label>
+        <select id="priority" name="priority" [(ngModel)]="priority">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-control" *ngIf="isEditing">
+      <label>
+        <input type="checkbox" name="completed" [(ngModel)]="completed">
+        Mark as completed
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn submit-btn">
+        {{ isEditing ? 'Update Task' : 'Save Task' }}
+      </button>
+      <button type="button" class="btn cancel-btn" *ngIf="isEditing" (click)="cancelEdit()">
+        Cancel Edit
+      </button>
+    </div>
+  </form>
+</div>

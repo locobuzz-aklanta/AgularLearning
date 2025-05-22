@@ -1,0 +1,65 @@
+<div class="task-list-container">
+  <div class="task-header">
+    <h2>Task List</h2>
+    
+    <div class="task-stats">
+      <div class="stat">
+        <span class="stat-label">Total:</span>
+        <span class="stat-value">{{ getTaskCountByStatus('all') }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Active:</span>
+        <span class="stat-value">{{ getTaskCountByStatus('active') }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Completed:</span>
+        <span class="stat-value">{{ getTaskCountByStatus('completed') }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="filters">
+    <label>Filter: </label>
+    <select [(ngModel)]="filterStatus">
+      <option value="all">All</option>
+      <option value="active">Active</option>
+      <option value="completed">Completed</option>
+    </select>
+  </div>
+  
+  <app-add-task 
+    [taskToEdit]="selectedTask"
+    (onAddTask)="addTask($event)"
+    (onUpdateTask)="updateTask($event)"
+    (onCancelEdit)="cancelEdit()">
+  </app-add-task>
+  
+  <div *ngIf="getDueSoonTasks().length > 0" class="due-soon-tasks">
+    <h3>Tasks Due Soon</h3>
+    <div *ngFor="let task of getDueSoonTasks()" class="task-item">
+      <app-task-item 
+        [task]="task" 
+        (onDelete)="deleteTask(task.id)" 
+        (onToggle)="toggleComplete(task.id)"
+        (onEdit)="editTask(task)">
+      </app-task-item>
+    </div>
+  </div>
+  
+  <div class="tasks">
+    <h3>{{ filterStatus === 'all' ? 'All Tasks' : filterStatus === 'active' ? 'Active Tasks' : 'Completed Tasks' }}</h3>
+    
+    <div *ngIf="getFilteredTasks().length === 0" class="empty-list">
+      <p>No tasks to display</p>
+    </div>
+    
+    <div *ngFor="let task of getFilteredTasks()" class="task-item">
+      <app-task-item 
+        [task]="task" 
+        (onDelete)="deleteTask(task.id)" 
+        (onToggle)="toggleComplete(task.id)"
+        (onEdit)="editTask(task)">
+      </app-task-item>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="task" 
+     [ngClass]="{'completed': task.completed, 'priority-low': task.priority === 'low', 'priority-medium': task.priority === 'medium', 'priority-high': task.priority === 'high'}"
+     [@taskComplete]="getCompletionState()">
+  <div class="task-header">
+    <div class="task-title">
+      <input type="checkbox" [checked]="task.completed" (click)="toggleComplete()">
+      <h3 [ngClass]="{'strike': task.completed}">{{ task.title }}</h3>
+    </div>
+    <div class="task-actions">
+      <button class="edit-btn" (click)="editTask()">✏️</button>
+      <button class="delete-btn" (click)="deleteTask()">×</button>
+    </div>
+  </div>
+  
+  <div class="task-details">
+    <p *ngIf="task.description">{{ task.description }}</p>
+    <div class="task-meta">
+      <span *ngIf="task.priority" class="priority-badge">{{ task.priority | titlecase }}</span>
+      <span *ngIf="task.dueDate" class="due-date" [ngClass]="{'overdue': task.dueDate < today && !task.completed}">
+        Due: {{ task.dueDate | date:'MMM d, y' }}
+      </span>
+    </div>
+  </div>
+</div>
