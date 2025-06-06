@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Task } from '../task';
+import { Task } from '../interfaces/task.interface';
 import { NgIf } from '@angular/common';
 
 @Component({

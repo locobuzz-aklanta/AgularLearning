@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { Task } from '../task';
+import { Task } from '../interfaces/task.interface';
 import { NgIf, NgClass, DatePipe, TitleCasePipe } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 

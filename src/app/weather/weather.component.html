@@ -1,0 +1,263 @@
+<div class="weather-container">
+  <!-- Header -->
+  <div class="weather-header">
+    <h2>🌤️ Weather Dashboard</h2>
+    <div class="weather-controls">
+      <button class="btn refresh-btn" (click)="refreshWeather()" [disabled]="loading">
+        {{ loading ? 'Loading...' : '🔄 Refresh' }}
+      </button>
+      
+      <div class="unit-toggles">
+        <button class="btn unit-btn" [class.active]="temperatureUnit === 'C'" (click)="toggleTemperatureUnit()">
+          °C
+        </button>
+        <button class="btn unit-btn" [class.active]="temperatureUnit === 'F'" (click)="toggleTemperatureUnit()">
+          °F
+        </button>
+        <span class="separator">|</span>
+        <button class="btn unit-btn" [class.active]="windUnit === 'kph'" (click)="toggleWindUnit()">
+          km/h
+        </button>
+        <button class="btn unit-btn" [class.active]="windUnit === 'mph'" (click)="toggleWindUnit()">
+          mph
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Search -->
+  <div class="search-section">
+    <div class="search-input-container">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (input)="searchLocations()"
+        placeholder="Search for a city..."
+        class="search-input">
+      <div class="search-icon">🔍</div>
+    </div>
+    
+    <div *ngIf="searchResults.length > 0" class="search-results">
+      <div *ngFor="let result of searchResults" 
+           class="search-result-item" 
+           (click)="selectLocation(result)">
+        <span class="location-name">{{ result.name }}</span>
+        <span class="location-details">{{ result.region }}, {{ result.country }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Permission Message -->
+  <div *ngIf="locationPermissionDenied" class="permission-message">
+    <p>📍 Location access was denied. You can search for any city above or we'll show weather for London by default.</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading weather data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <p>❌ {{ error }}</p>
+    <button class="btn" (click)="loadDefaultLocation()">Try Default Location</button>
+  </div>
+
+  <!-- Weather Data -->
+  <div *ngIf="weatherData && !loading" class="weather-content">
+    
+    <!-- Current Weather -->
+    <div class="current-weather-card">
+      <div class="current-weather-header">
+        <div class="location-info">
+          <h3>{{ weatherData.location.name }}, {{ weatherData.location.region }}</h3>
+          <p>{{ weatherData.location.country }}</p>
+          <p class="local-time">{{ weatherData.location.localtime | date:'EEEE, MMMM d, y - h:mm a' }}</p>
+        </div>
+        <div class="weather-icon">
+          <img [src]="'https:' + weatherData.current.condition.icon" 
+               [alt]="weatherData.current.condition.text"
+               class="condition-icon">
+        </div>
+      </div>
+      
+      <div class="current-weather-details">
+        <div class="temperature">
+          <span class="temp-value">
+            {{ getTemperature(weatherData.current.temp_c, weatherData.current.temp_f) | number:'1.0-0' }}°
+          </span>
+          <span class="temp-unit">{{ temperatureUnit }}</span>
+        </div>
+        
+        <div class="condition-text">
+          {{ weatherData.current.condition.text }}
+        </div>
+        
+        <div class="feels-like">
+          Feels like {{ getTemperature(weatherData.current.feelslike_c, weatherData.current.feelslike_f) | number:'1.0-0' }}°{{ temperatureUnit }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Weather Details Grid -->
+    <div class="weather-details-grid">
+      <div class="detail-card">
+        <div class="detail-icon">💨</div>
+        <div class="detail-content">
+          <span class="detail-label">Wind</span>
+          <span class="detail-value">
+            {{ getWindSpeed(weatherData.current.wind_kph, weatherData.current.wind_mph) | number:'1.0-0' }} {{ windUnit }}
+          </span>
+          <span class="detail-extra">{{ weatherData.current.wind_dir }}</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-icon">💧</div>
+        <div class="detail-content">
+          <span class="detail-label">Humidity</span>
+          <span class="detail-value">{{ weatherData.current.humidity }}%</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-icon">👁️</div>
+        <div class="detail-content">
+          <span class="detail-label">Visibility</span>
+          <span class="detail-value">{{ weatherData.current.vis_km }} km</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-icon">🌡️</div>
+        <div class="detail-content">
+          <span class="detail-label">Pressure</span>
+          <span class="detail-value">{{ weatherData.current.pressure_mb }} mb</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-icon">☀️</div>
+        <div class="detail-content">
+          <span class="detail-label">UV Index</span>
+          <span class="detail-value">{{ weatherData.current.uv }}</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-icon">☁️</div>
+        <div class="detail-content">
+          <span class="detail-label">Cloud Cover</span>
+          <span class="detail-value">{{ weatherData.current.cloud }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Air Quality -->
+    <div *ngIf="weatherData.air_quality" class="air-quality-card">
+      <h4>🌬️ Air Quality</h4>
+      <div class="air-quality-index">
+        <span class="aqi-label">US EPA Index:</span>
+        <span class="aqi-value" [style.background-color]="getAirQualityColor(weatherData.air_quality['us-epa-index'])">
+          {{ getAirQualityLevel(weatherData.air_quality['us-epa-index']) }}
+        </span>
+      </div>
+      
+      <div class="air-quality-details">
+        <div class="aqi-item">
+          <span>CO:</span>
+          <span>{{ weatherData.air_quality.co | number:'1.1-1' }} μg/m³</span>
+        </div>
+        <div class="aqi-item">
+          <span>NO₂:</span>
+          <span>{{ weatherData.air_quality.no2 | number:'1.1-1' }} μg/m³</span>
+        </div>
+        <div class="aqi-item">
+          <span>O₃:</span>
+          <span>{{ weatherData.air_quality.o3 | number:'1.1-1' }} μg/m³</span>
+        </div>
+        <div class="aqi-item">
+          <span>PM2.5:</span>
+          <span>{{ weatherData.air_quality.pm2_5 | number:'1.1-1' }} μg/m³</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weather Alerts -->
+    <div *ngIf="weatherData.alerts?.alert?.length" class="alerts-section">
+      <h4>⚠️ Weather Alerts</h4>
+      <div *ngFor="let alert of weatherData.alerts?.alert || []" 
+           class="alert-card" 
+           [ngClass]="getAlertSeverityClass(alert.severity)">
+        <div class="alert-header">
+          <span class="alert-event">{{ alert.event }}</span>
+          <span class="alert-severity">{{ alert.severity }}</span>
+        </div>
+        <p class="alert-headline">{{ alert.headline }}</p>
+        <div class="alert-times">
+          <span>From: {{ alert.effective | date:'short' }}</span>
+          <span>Until: {{ alert.expires | date:'short' }}</span>
+        </div>
+        <div class="alert-areas">
+          <strong>Areas:</strong> {{ alert.areas }}
+        </div>
+        <div class="alert-description">
+          {{ alert.desc }}
+        </div>
+        <div *ngIf="alert.instruction" class="alert-instruction">
+          <strong>Instructions:</strong> {{ alert.instruction }}
+        </div>
+      </div>
+    </div>
+
+    <!-- 5-Day Forecast -->
+    <div *ngIf="weatherData.forecast" class="forecast-section">
+      <h4>📅 5-Day Forecast</h4>
+      <div class="forecast-grid">
+        <div *ngFor="let day of weatherData.forecast.forecastday" class="forecast-day">
+          <div class="forecast-date">
+            {{ day.date | date:'EEE, MMM d' }}
+          </div>
+          <div class="forecast-icon">
+            <img [src]="'https:' + day.day.condition.icon" 
+                 [alt]="day.day.condition.text"
+                 class="forecast-condition-icon">
+          </div>
+          <div class="forecast-temps">
+            <span class="high-temp">
+              {{ getTemperature(day.day.maxtemp_c, day.day.maxtemp_f) | number:'1.0-0' }}°
+            </span>
+            <span class="low-temp">
+              {{ getTemperature(day.day.mintemp_c, day.day.mintemp_f) | number:'1.0-0' }}°
+            </span>
+          </div>
+          <div class="forecast-condition">
+            {{ day.day.condition.text }}
+          </div>
+          <div class="forecast-details">
+            <div class="forecast-detail">
+              <span>💧 {{ day.day.daily_chance_of_rain }}%</span>
+            </div>
+            <div class="forecast-detail">
+              <span>💨 {{ getWindSpeed(day.day.maxwind_kph, day.day.maxwind_mph) | number:'1.0-0' }} {{ windUnit }}</span>
+            </div>
+          </div>
+          
+          <!-- Astronomy Info -->
+          <div class="astronomy-info">
+            <div class="astro-item">
+              <span>🌅 {{ day.astro.sunrise }}</span>
+            </div>
+            <div class="astro-item">
+              <span>🌇 {{ day.astro.sunset }}</span>
+            </div>
+            <div class="astro-item">
+              <span>🌙 {{ day.astro.moon_phase }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
